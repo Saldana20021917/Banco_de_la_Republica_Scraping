@@ -1,6 +1,8 @@
 import os
 import time
 import unicodedata
+import sys
+import platform
 from collections import defaultdict
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -91,8 +93,31 @@ categorias = {
             "1": "BID-ASK Spread TES Pesos",
             "2": "BID-ASK Spread TES UVR"}}}
 
+def get_download_folder():
+    sistema = platform.system()
+
+    if sistema == "Windows":
+        try:
+            import winreg
+            sub_key = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders'
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub_key) as key:
+                downloads, _ = winreg.QueryValueEx(key, '{374DE290-123F-4565-9164-39C4925E467B}')
+                return downloads
+        except Exception as e:
+            print(f"⚠️ Error accediendo al registro de Windows: {e}")
+            return os.path.join(os.path.expanduser("~"), "Downloads")  # Fallback
+
+    else:  # macOS o Linux
+        try:
+            from platformdirs import user_download_dir
+            return user_download_dir()
+        except ImportError:
+            print("⚠️ La librería platformdirs no está instalada. Usando ruta por defecto.")
+            return os.path.join(os.path.expanduser("~"), "Downloads") 
+
+
 # Directorio de descarga
-download_dir = os.path.join(os.getcwd(), "downloads")
+download_dir = get_download_folder()
 os.makedirs(download_dir, exist_ok=True)
 
 # Renombrar archivo descargado
