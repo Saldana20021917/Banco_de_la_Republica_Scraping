@@ -63,8 +63,11 @@ Durante la ejecución, el script le pedirá:
 - 
 #### 📌 Ejemplo de entrada en consola:
 > Ingresa el número de la categoría: 2
+
 > Ingresa el(los) número(s) del/los indicador(es), separados por comas: 1,2
+
 > Fecha de inicio (DD/MM/AAAA): 01/01/2018
+
 > Fecha de fin (DD/MM/AAAA): 30/12/2023
 
 ### 📥 Paso 5: Descarga automática
