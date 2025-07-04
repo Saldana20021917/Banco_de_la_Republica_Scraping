@@ -124,14 +124,25 @@ os.makedirs(download_dir, exist_ok=True)
 def rename_latest_download(new_name):
     while any(f.endswith(".crdownload") for f in os.listdir(download_dir)):
         time.sleep(1)
+
     files = [f for f in os.listdir(download_dir) if f.endswith('.xlsx')]
-    if files:
-        latest = max([os.path.join(download_dir, f) for f in files], key=os.path.getctime)
-        target = os.path.join(download_dir, new_name)
-        os.rename(latest, target)
-        print(f"✅ Archivo renombrado como: {os.path.basename(target)}")
-    else:
+    if not files:
         print("⚠️ No se encontró archivo descargado para renombrar.")
+        return
+
+    latest = max([os.path.join(download_dir, f) for f in files], key=os.path.getctime)
+    
+    # Si ya existe el archivo, busca un nombre alternativo
+    name, ext = os.path.splitext(new_name)
+    target = os.path.join(download_dir, new_name)
+    contador = 1
+    while os.path.exists(target):
+        target = os.path.join(download_dir, f"{name} ({contador}){ext}")
+        contador += 1
+
+    os.rename(latest, target)
+    print(f"✅ Archivo renombrado como: {os.path.basename(target)}")
+
 
 # Generar nombre para archivo con fechas
 def limpiar_texto(texto):
@@ -277,7 +288,7 @@ while True:
         chucho = generar_chucho(indicadores_seleccionados, fecha_inicio, fecha_fin)
         rename_latest_download(chucho)
 
-    seguir = input("\n🔁 ¿Deseas descargar más indicadores? (s/n): ").strip().lower()
-    if seguir != "s":
+    seguir = input("\n🔁 ¿Deseas descargar más indicadores? (si/no): ").strip().lower()
+    if seguir != "si":
         print("👋 Programa finalizado. ¡Hasta pronto!")
         break
